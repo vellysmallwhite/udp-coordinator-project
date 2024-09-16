@@ -1,0 +1,67 @@
+
+
+# UDP Coordinator Project
+
+This project implements a distributed coordination system using UDP sockets and Docker containers. Multiple processes communicate with each other to synchronize their "ready" states before starting a task.
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+- C++ compiler (g++)
+
+## Project Structure
+
+- `coordinator.cpp`: Main source file
+- `Dockerfile`: Instructions for building the Docker image
+- `docker-compose.yml`: Orchestration file for running multiple containers
+- `hostfile.txt`: Configuration file listing all hostnames
+
+## Setup and Running Instructions
+
+1. Clone the repository:
+
+git clone <repository-url>
+cd <project-directory>
+
+
+2. Build the Docker image:
+
+docker build . -t prj1
+
+
+3. Create a Docker network:
+
+docker network create coordinator_network
+
+
+4. Run individual containers (for testing):
+
+docker run --name coordinator1 --network coordinator_network --hostname coordinator1 prj1 /app/hostfile.txt coordinator1
+docker run --name coordinator2 --network coordinator_network --hostname coordinator2 prj1 /app/hostfile.txt coordinator2
+docker run --name coordinator3 --network coordinator_network --hostname coordinator3 prj1 /app/hostfile.txt coordinator3
+
+
+
+
+
+## Debugging
+
+- To  restart containers after code changes:
+
+docker stop $(docker ps -aq)
+ddocker rm $(docker ps -aq)
+
+- And then restart with the above commands
+
+
+## Notes
+
+- Ensure the `hostfile.txt` contains the correct hostnames for all containers.
+- The program uses UDP for communication, so some messages may be lost. The implementation includes retry mechanisms to handle this.
+- All containers must be on the same Docker network to communicate.
+
+## Troubleshooting
+
+- If containers can't resolve hostnames, ensure DNS is configured correctly in your Docker daemon.
+- For MAC users experiencing DNS issues, refer to the DNS configuration instructions in the project documentation.

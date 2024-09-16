@@ -1,0 +1,51 @@
+# Initialization:
+
+Each process reads a hostfile containing the hostnames of all participating processes.
+The process creates a UDP socket and binds it to a predefined port.
+It initializes a vector to track the ready status of all processes, setting its own status to ready.
+
+# Message Exchange:
+
+The algorithm uses two types of messages:
+a. "READY" messages: Sent to announce a process is ready.
+b. "ACK" messages: Sent to acknowledge receipt of a READY message.
+
+# Concurrent Sending and Receiving:
+
+Two threads are created:
+a. Sender Thread: Continuously sends READY messages to processes not yet marked as ready.
+b. Receiver Thread: Listens for incoming READY and ACK messages.
+
+# Sender Thread Logic:
+
+Iterates through the list of hosts.
+For each host not marked as ready (excluding itself), it sends a READY message.
+This process repeats at regular intervals until all processes are ready.
+
+# Receiver Thread Logic:
+
+Listens for incoming UDP messages.
+Upon receiving a READY message:
+Marks the sender as ready in the ready_hosts vector.
+Sends an ACK message back to the sender.
+Upon receiving an ACK message:
+Marks the sender as ready in the ready_hosts vector.
+
+# Ready State Determination:
+
+After processing each received message, the algorithm checks if all processes are ready.
+
+A process is considered ready if:
+
+a. It has sent a READY message and received an ACK, or
+b. It is the current process itself.
+If all processes are ready, the algorithm sets a global flag and prints "READY" to stderr.
+
+
+# Robustness Measures
+
+Message Retries: The sender thread continuously sends READY messages to ensure delivery in case of packet loss.
+Acknowledgments: ACK messages confirm receipt of READY messages, providing reliability.
+Mutex Locks: Used to prevent race conditions when updating the shared ready_hosts vector.
+Hostname Resolution: Uses getaddrinfo() for robust hostname-to-IP resolution in Docker environments.
+Initial Delay: Implements a short delay at startup to allow all containers to initialize.

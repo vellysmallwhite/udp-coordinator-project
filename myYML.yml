@@ -1,0 +1,29 @@
+version: '3'
+services:
+  coordinator1:
+    build: .
+    hostname: coordinator1
+    networks:
+      - coordinator_network
+    command: /app/hostfile.txt coordinator1
+
+  coordinator2:
+    build: .
+    hostname: coordinator2
+    networks:
+      - coordinator_network
+    command: /app/hostfile.txt coordinator2
+
+  coordinator3:
+    build: .
+    hostname: coordinator3
+    networks:
+      - coordinator_network
+    command: /app/hostfile.txt coordinator3
+
+networks:
+  coordinator_network:
+    driver: bridge
+
+volumes:
+  - ./:/app
